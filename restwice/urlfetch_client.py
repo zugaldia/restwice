@@ -11,7 +11,7 @@ from restwice.base_client import BaseClient
 from restwice.enums import HttpMethod
 from restwice.rest_exception import RestwiceException
 
-# import logging
+import logging
 
 # Limits:
 # * Request size: 10 megabytes
@@ -60,13 +60,13 @@ class UrlFetchClient(BaseClient):
             raise RestwiceException('Invalid urlfetch method: {}'.format(http_method))
 
         # Debug
-        # debug_dict = {
-        #     'url': urlfetch_url,
-        #     'payload': urlfetch_payload,
-        #     'method': urlfetch_method,
-        #     'headers': urlfetch_headers,
-        #     'deadline': urlfetch_deadline}
-        # logging.info('[urlfetch.fetch] %s' % json.dumps(debug_dict))
+        debug_dict = {
+            'url': urlfetch_url,
+            'payload': urlfetch_payload,
+            'method': urlfetch_method,
+            'headers': urlfetch_headers,
+            'deadline': urlfetch_deadline}
+        logging.info('[urlfetch.fetch] %s' % json.dumps(debug_dict))
 
         # Do the actual request
         result = urlfetch.fetch(
