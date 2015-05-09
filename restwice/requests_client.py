@@ -53,6 +53,17 @@ class RequestsClient(BaseClient):
         else:
             raise RestwiceException('Unhandled Requests method: {}'.format(http_method))
 
+        # Debug
+        debug_dict = {
+            'method': http_method.lower(),
+            'url': endpoint,
+            'params': requests_params,
+            'data': requests_data,
+            'json': requests_json,
+            'headers': headers,
+            'timeout': requests_timeout}
+        print('[requests.request] %s' % json.dumps(debug_dict))
+
         # Fetch
         r = requests.request(
             method=http_method.lower(),
