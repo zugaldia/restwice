@@ -18,6 +18,8 @@ https://cloud.google.com/appengine/docs/python/memcache/clientclass
 import os
 import json
 
+DEFAULT_ENCODING = 'utf-8'
+
 
 class MemcacheLocal(object):
     def __init__(self, extension='json', root_folder=None):
@@ -29,7 +31,7 @@ class MemcacheLocal(object):
                 print '[memcachelocal] Root folder created: %s' \
                     % self._root_folder
             except Exception as e:
-                print '[memcachelocal] I could not create the root folder \
+                print '[memcachelocal] Failed to create the root folder \
                     (%s): %s' % (self._root_folder, unicode(e))
 
     '''
@@ -50,7 +52,7 @@ class MemcacheLocal(object):
         filepath = self._get_filepath(namespace=namespace, key='incr')
         content = self._get_content(filepath=filepath)
         content_decoded = {} if content is None else json.loads(content)
-        content_decoded[key] = content_decoded[key] + delta \
+        content_decoded[key] = (content_decoded[key] + delta) \
             if key in content_decoded else initial_value
         content_encoded = json.dumps(content_decoded, indent=2)
         self._set_content(filepath=filepath, content=content_encoded)
@@ -61,32 +63,37 @@ class MemcacheLocal(object):
     '''
 
     def _get_filepath(self, namespace, key):
-        prefix = namespace or 'cache'
+        prefix = namespace or 'restwice'
         filename = '%s_%s.%s' % (prefix, key, self._extension)
         return os.path.join(self._root_folder, filename)
 
     def _get_content(self, filepath):
+        if not os.path.isfile(filepath):
+            print '[memcachelocal] This request hasn\'t been cached yet (%s).' \
+                % filepath
+            return None
         try:
             f = open(filepath, 'r')
-            content = f.read()
+            content = f.read().decode(DEFAULT_ENCODING)
             f.close()
         except Exception as e:
-            print '[memcachelocal] Failed to read cache file (%s), probably \
-                it doesn\'t exist yet: %s' % (filepath, unicode(e))
+            print '[memcachelocal] Failed to read cache file (%s): %s' % \
+                (filepath, unicode(e))
             return None
         else:
             return content
 
     def _set_content(self, filepath, content):
-        if len(content) == 0:
+        if content is None or len(content) == 0:
             print '[memcachelocal] Got no content (%s), ignoring.' % filepath
             return
         try:
             f = open(filepath, 'w')
-            f.write(content.encode('utf-8'))
+            f.write(content.encode(DEFAULT_ENCODING))
             f.close()
         except Exception as e:
             print '[memcachelocal] Failed to save cache file (%s): %s' % \
                 (filepath, unicode(e))
         else:
-            print '[memcachelocal] Cache file saved: %s' % filepath
+            print '[memcachelocal] Cache file saved (%s), size: %d.' % \
+                (filepath, len(content))
