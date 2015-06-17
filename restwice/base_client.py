@@ -239,7 +239,13 @@ class BaseClient(object):
 
         # Parse result if requested
         if json_response and raw_result is not None:
-            return json.loads(raw_result), cached_result
+            try:
+                result = json.loads(raw_result)
+            except:
+                print 'JSON decoding failed, raw response was: %s' % raw_result
+                raise
+            else:
+                return result, cached_result
 
         # Done
         return raw_result, cached_result
