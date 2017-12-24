@@ -3,6 +3,7 @@ See:
 http://en.wikipedia.org/wiki/List_of_HTTP_status_codes
 '''
 
+
 class HttpStatusCode(object):
     # 1xx
     CONTINUE = 100

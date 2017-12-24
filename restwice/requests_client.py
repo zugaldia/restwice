@@ -14,6 +14,7 @@ from restwice.rest_exception import RestwiceException
 
 DEFAULT_DEADLINE = 5  # To match URL fetch in AppEngine
 
+
 class RequestsClient(BaseClient):
 
     def _get_uri_query(self, endpoint, data):
